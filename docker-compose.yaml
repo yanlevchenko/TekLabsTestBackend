@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  web:
+    image: "teklab"
+    build: ./app
+    command: uvicorn main:app --host 0.0.0.0
+    ports:
+      - "8000:8000"
+    environment:
+      DB_URL: postgresql://postgres:postgres@db:5432/tek_labs_db
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - teklab
+  db:
+    image: "postgres"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+    environment:
+      POSTGRES_DB: "tek_labs_db"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - teklab
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+  
+volumes:
+  postgres_data:
+
+networks:
+  teklab:
